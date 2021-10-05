@@ -41,13 +41,26 @@ contract NFTMarket is ReentrancyGuard , Auctioning {
     uint256 price,
     bool sold
   );
+  
+  mapping(address=>uint)balance;
+
     
-    function sendViaCall(address payable _to) public payable {
-        // Call returns a boolean value indicating success or failure.
-        // This is the current recommended method to use.
-        (bool sent, bytes memory data) = _to.call{value: msg.value}("");
-        require(sent, "Failed to send Ether");
+    function PayFee() public payable {
+       balance[msg.sender]+=msg.value;
     }
+    
+function getBalance() public returns(uint){
+return address(this).balance;
+}
+
+//  function sendViaCall(address payable _to) public payable {
+//         // Call returns a boolean value indicating success or failure.
+//         // This is the current recommended method to use.
+//         (bool sent, bytes memory data) = _to.call{value: msg.value}("");
+//         require(sent, "Failed to send Ether");
+    }
+    
+   
   /* Returns the listing price of the contract */
   function getListingPrice() public view returns (uint256) {
     return listingPrice;
@@ -60,7 +73,7 @@ contract NFTMarket is ReentrancyGuard , Auctioning {
     uint256 price
   ) public payable nonReentrant {
     require(price > 0, "Price must be at least 1 wei");
-    //require(msg.value == listingPrice, "Price must be equal to listing price");
+    require(msg.value >= listingPrice, "Price must be equal to listing price");
 
     _itemIds.increment();
     uint256 itemId = _itemIds.current();
