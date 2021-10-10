@@ -1,0 +1,55 @@
+
+
+.home-link a {
+    color:white!important;
+    text-decoration:none;
+}
+.custom-nav a{
+    text-decoration: none!important;
+    font-size: 1rem;
+    color:black;
+    margin-right: 1.5rem;
+}
+
+.custom-nav a:hover {
+    color:blueviolet;
+}
+
+.bg {
+    background: url('../src/assets/web1.svg') no-repeat; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+}
+
+
+.building_bg {
+    padding: 0%;
+    max-width: 60%;
+    min-height: 30rem;
+    background: url('../src/assets/web3bridge.svg') no-repeat; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+
+.cloud {
+    padding: 0%;
+    width: 100%;
+    min-height: 30rem;
+    padding: 0%;
+    width: 100%;
+    min-height: 30rem;
+    /* background: url('../src/assets/web00.svg') no-repeat;  */
+    background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(42, 17, 63, 0.5) ), url('../src/assets/web00.svg') no-repeat;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+}

@@ -1,0 +1,63 @@
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
+import './index.css'
+import Carousel from "react-elastic-carousel";
+import styled from "styled-components";
+
+
+const Item =  styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 250px;
+  width: 100%;
+  background-color: #683bb7;
+  color: #fff;
+  margin: 15px;
+  font-size: 4em;
+`;
+
+
+const breakPoints = [
+  { width: 1, itemsToShow: 1 },
+  { width: 550, itemsToShow: 2, itemsToScroll: 2 },
+  { width: 768, itemsToShow: 3 },
+  { width: 1200, itemsToShow: 4 }
+];
+
+function SlideShow() {
+  const [items, setItems] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
+
+  const addItem = () => {
+    const nextItem = Math.max(1, items.length + 1);
+    setItems([...items, nextItem]);
+  };
+
+  const removeItem = () => {
+    const endRange = Math.max(0, items.length - 1);
+    setItems(items.slice(0, endRange));
+  };
+
+  return (
+    <div className="App">
+      <div className="controls-wrapper">
+        <button onClick={removeItem}>Remove Item</button>
+        <button onClick={addItem}>Add Item</button>
+      </div>
+      <hr className="seperator" />
+      <div className="carousel-wrapper">
+        <Carousel breakPoints={breakPoints}>
+          {items.map((item) => (
+            <Item key={item}>{item}</Item>
+          ))}
+        </Carousel>
+      </div>
+    </div>
+  );
+}
+
+
+export default SlideShow;
+
+
+

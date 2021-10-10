@@ -1,11 +1,9 @@
-/* pages/index.js */
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Web3Modal from "web3modal"
 import Image from 'next/image'
 import banner from '../images/bg1.jpg'
 import Head from 'next/head'
+import Link from 'next/link'
 
 import {
   nftaddress, nftmarketaddress
@@ -13,171 +11,149 @@ import {
 
 import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json'
+// import NftSlides from './components/NftSlides/Index.js'
 
 export default function Home() {
-  const [nfts, setNfts] = useState([])
-  const [loadingState, setLoadingState] = useState('not-loaded')
-  useEffect(() => {
-    loadNFTs()
-  }, [])
-  
-  async function loadNFTs() {
-    /* create a generic provider and query for unsold market items */
-    const provider = new ethers.providers.JsonRpcProvider()
-    const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
-    const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider)
-    const data = await marketContract.fetchMarketItems()
-
-    /*
-    *  map over items returned from smart contract and format 
-    *  them as well as fetch their token metadata
-    */
-    const items = await Promise.all(data.map(async i => {
-      const tokenUri = await tokenContract.tokenURI(i.tokenId)
-      const meta = await axios.get(tokenUri)
-      let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-      let item = {
-        price,
-        tokenId: i.tokenId.toNumber(),
-        seller: i.seller,
-        owner: i.owner,
-        image: meta.data.image,
-        name: meta.data.name,
-        description: meta.data.description,
-      }
-      return item
-    }))
-    setNfts(items)
-    setLoadingState('loaded') 
-  }
-  async function buyNft(nft) {
-    /* needs the user to sign the transaction, so will use Web3Provider and sign it */
-    const web3Modal = new Web3Modal()
-    const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)
-    const signer = provider.getSigner()
-    const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
-
-    /* user will be prompted to pay the asking proces to complete the transaction */
-    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')   
-    const transaction = await contract.createMarketSale(nftaddress, nft.tokenId, {
-      value: price
-    })
-    await transaction.wait()
-    loadNFTs()
-  }
-  if (loadingState === 'loaded' && !nfts.length) return (<h1 className="px-20 py-10 text-3xl">No items in marketplace</h1>)
   return (
  <div> 
       <Head>
         <title>AfricaNFT MarketPlace - Explore, Create and Sell NFTs</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head> 
-  <>
-  <Image
-    src={banner}
-    alt="AfricaNFT site"
-    // width={500} automatically provided
-    height={500} //automatically provided
-    // blurDataURL="data:..." automatically provided
-    // Optionally allows to add a blurred version of the image while loading
-    // placeholder="blur"
-  />
-  <p className="text-center text-2xl mb-4 font-bold text-black font-sans">Explore our New Collectibles</p>
-  </>
 
-    <div className="flex justify-center pb-6">
-      <div className="px-4" style={{ maxWidth: '1600px' }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4" >
-  
-          {
-            nfts.map((nft, i) => (
-              <div key={i} className="bg-blue-300 border shadow rounded-xl overflow-hidden">
-                <img className="object-fill h-200 w-full" src={nft.image} style={{ height: '200px', width:"100%"  }} />
-                <div className="p-4">
-                  <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
-                  <div style={{ height: '70px', overflow: 'hidden' }}>
-                    <p className="text-black">{nft.description}</p>
-                  </div>
-                </div>
-                <div className="p-4 bg-black">
-                  <p className="text-2xl mb-4 font-bold text-white">{nft.price} MATIC</p>
-                  <button className="w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => buyNft(nft)}>Buy</button>
-                </div>
-                
-              </div>
-            ))
-          }
-        </div>
+      <div className='d-flex justify-content-between container align-items-center py-2 py-3 border-2 px-4' style={{
+        lineHeight:'1.5rem'
+      }} >
+        <div className='bg'>
+          <h2 className='my-2'>Discover, Collect and sell NFTs </h2>
+
+          <p style={{
+            maxWidth:'20rem'
+          }} className='mt-5'>
+          Lorem Ipsum is simply dummy text of the printi
+          ng and typesetting industry. Lorem Ipsum has been
+          </p>
+
+          <h4>Trade digital items on AfricaNfts</h4>
+
+          <div className='my-3 home-link' >
+          <button className='px-5 mt-4 fw-bold'  style={{
+            padding:'0.8rem',
+            background:'#0038F5',
+            borderRadius:'10px',
+            color:'white'
+          }}> 
+             <Link href='/create-new-nft'>
+          Create
+          </Link>
+          </button>
+
+          </div>
         
-      </div>
-    </div>
-    <div>
-    <>
-<p className="text-center text-2xl mb-4 font-bold text-black font-sans">Trending Hot Collectibles</p>
-</>
-        </div>
-    
-    <div className="flex justify-center pb-6">
+        <div className='my-3'>
 
-      <div className="px-4" style={{ maxWidth: '1600px' }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4" >
-  
-          {
-            nfts.map((nft, i) => (
-              <div key={i} className="bg-blue-300 border shadow rounded-xl overflow-hidden">
-                <img className="object-fill h-200 w-full" src={nft.image} style={{ height: '200px', width:"100%"  }} />
-                <div className="p-4">
-                  <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
-                  <div style={{ height: '70px', overflow: 'hidden' }}>
-                    <p className="text-black">{nft.description}</p>
-                  </div>
-                </div>
-                <div className="p-4 bg-black">
-                  <p className="text-2xl mb-4 font-bold text-white">{nft.price} MATIC</p>
-                  <button className="w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => buyNft(nft)}>Buy</button>
-                </div>
-                
-              </div>
-            ))
-          }
+           <button className='px-5 fw-bold'  style={{
+            borderRadius:'10px',
+            border:'1px solid #0038F5',
+            padding:'0.8rem',
+            background:'transparent'
+          }}>
+          
+            <Link href='/all-nfts'>
+          Discover
+          </Link>
+          
+           </button>
+          </div>
+          
+          </div>
+          <div className="building_bg w-100" >
+         
+
+
+            </div>
         </div>
+
+
+        {/* <NftSlides /> */}
+        <div className="cloud w-100 text-white p-3"  style={{
         
-      </div>
-    </div>
-          <div>
-          <>
-<p className="text-center text-2xl mb-4 font-bold text-black font-sans">Bid in the Ongoing Auctions </p>
-</>
-        </div>
+        }} >
 
-    <div className="flex justify-center">
+          <div style={{
+           maxWidth:'60rem',
+           lineHeight:'1.8rem',
+           margin:'auto'
+         }}> 
+         <h4 className='text-center mt-4'>About AfricaNFTs</h4>
 
-      <div className="px-4" style={{ maxWidth: '1600px' }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4" >
-  
-          {
-            nfts.map((nft, i) => (
-              <div key={i} className="bg-blue-300 border shadow rounded-xl overflow-hidden">
-                <img className="object-fill h-200 w-full" src={nft.image} style={{ height: '200px', width:"100%"  }} />
-                <div className="p-4">
-                  <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
-                  <div style={{ height: '70px', overflow: 'hidden' }}>
-                    <p className="text-black">{nft.description}</p>
-                  </div>
-                </div>
-                <div className="p-4 bg-black">
-                  <p className="text-2xl mb-4 font-bold text-white">{nft.price} MATIC</p>
-                  <button className="w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => buyNft(nft)}>Buy</button>
-                </div>
-                
-              </div>
-            ))
-          }
-        </div>
-        
-      </div>
-    </div>
+         <h1 className='mt-5'> Product Details</h1>
+
+         <p style={{
+           maxWidth:'25rem',
+          lineHeight:'1.5rem'
+          
+          
+         }}  className='mt-3'> className Lorem lreo  Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+           Lorem   Ip sum has been the industry's standard dummy text ever since the 1500s, 
+           when an unknown printer took a galley of type and scrambled it to make a type specimen book. I </p>
+
+            <button className='border-0 btn btn-small btn-primary p-3 text-gray fw-bold' style={{
+              opacity:'0.85'
+            }}>learn more</button>
+            </div>
+
+         <div> 
+
+           
+
+           </div>
+          </div>
+
+            
+            <div style={{
+               background:'#C4C4C4',
+               padding:'1rem'
+            }}> 
+          <div style={{
+           maxWidth:'60rem',
+           margin:'auto'
+          
+          }}> 
+
+        <p style={{
+          color:'#AF6262',
+          fontSize:'1.8rem',
+          fontWeight:600
+
+        }}> Ready to get Started</p>
+        <p style={{
+          fontWeight:500
+        }}>Get the latest AfricaNFTs update</p>
+
+        <div>
+          <input  placeholder='Your email address' style={{
+            padding:'0.7rem',
+            borderTopLeftRadius:'10px',
+            borderBottomLeftRadius:'10px',
+            outline:'0'
+          
+          }}
+            />
+          <button style={{
+              padding:'0.7rem 0.8rem',
+             borderRadius:'10px',
+             background:'#3C64B1',
+             marginLeft:'-0.5rem',
+             color:'#fff'
+          }}> search  </button>
+          </div>
+
+          </div>
+
+
+         </div>
+
     </div>
   )
 }
